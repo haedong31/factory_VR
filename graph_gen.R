@@ -3,7 +3,6 @@ library(lubridate)
 library(igraph)
 
 ##### Data import and preparation -----
-
 p1 <- read_delim("./data/data_haedong_orig.txt", 
                  delim = ",", col_names = FALSE)
 colnames(p1) <- c("action", "time")
@@ -22,6 +21,8 @@ p2 <- p2 %>% select(action, player, time)
 
 df <- bind_rows(p1, p2)
 df <- df %>% arrange(time)
+df$time <- str_c(hour(df$time),":",minute(df$time),":",second(df$time))
+write_csv(df, "./data/agg_edge_list.csv")
 
 ##### Node & edge lists (undirected) -----
 # node list
