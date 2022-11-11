@@ -35,7 +35,7 @@ for (i in seq_along(players)) {
 }
 nlist <- tibble(Id = nid, Label = nlabel)
 
-# edge list
+# edge list for dynamic graph
 num_edges <- nrow(df)-1
 efrom <- vector(mode = "character", length = num_edges)
 eto <- vector(mode = "character", length = num_edges)
@@ -79,7 +79,21 @@ for (i in 1:num_edges) {
   }
   w[i] <- eid[[str_c(e1, e2)]]
 }
+el_dynamic <- tibble(Source = efrom, Target = eto, Weight = w, Time = t[1:num_edges])
 
-el <- tibble(Source = efrom, Target = eto, Weight = w, Time = t[1:num_edges])
+# edge list for aggregated graph 
+elist <- str_c(efrom, eto) %>% 
+  unique() %>% 
+  sort()
+efrom <- vector("character", length = length(elist))
+eto <- vector("character", length = length(elist))
+w <- vector("numeric", length = length(elist))
+for (i in seq_along(elist)){
+  enodes <- strsplit(elist[i], "")[[1]]
+  efrom[i] <- enodes[1]
+  eto[i] <- enodes[2]
+  w[i] <- eid[[elist[i]]]
+}
+el <- tibble(Source = efrom, Targt = eto, Weight = w)
 
 ##### Network stats -----
