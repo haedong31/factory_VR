@@ -26,15 +26,21 @@ write_csv(df, "./data/agg_edge_list.csv")
 
 ##### Node & edge lists (undirected) -----
 # node list
-num_acts <- length(unique(df$action))
 players <- unique(df$player)
+acts <- unique(df$action)
+num_acts <- length(acts)
 num_nodes <- num_acts * length(players)
 nid <- seq(1, num_nodes)
 nlabel <- vector("character", length = num_nodes)
-for (i in seq_along(players)) {
-  nlabel[(1+num_acts*(i-1)):(i*num_acts)] <- players[i]
+for (i in seq_along(players)){
+  nlabel[(1+num_acts*(i-1)):(i*num_acts)] <- str_c(players[i], " & ", acts)
 }
-nlist <- tibble(Id = nid, Label = nlabel)
+ngroup <- vector("character", length = num_nodes)
+for (i in seq_along(players)) {
+  ngroup[(1+num_acts*(i-1)):(i*num_acts)] <- players[i]
+}
+nlist <- tibble(Id = nid, Label = nlabel, Group = ngroup)
+# write_csv(nlist, "./data/nlist.csv")
 
 # edge list for dynamic graph
 num_edges <- nrow(df)-1
@@ -47,7 +53,6 @@ for (i in 1:num_nodes) {
 }
 w <- vector("numeric", length = num_edges)
 t <- df$time
-t <- str_c(hour(t),":",minute(t),":",second(t))
 
 for (i in 1:num_edges) {
   if (df$action[i]=="Spawn Pieces" & df$player[i]==players[1]) {
@@ -76,11 +81,12 @@ for (i in 1:num_edges) {
     eid[[str_c(e1, e2)]] <- eid[[str_c(e1, e2)]] + 1
   } else{
     eid[[str_c(e1, e2)]] <- eid[[str_c(e1, e2)]] + 1
-    eid[[str_c(e2, e1)]] <- eid[[str_c(e2, e1)]] + 1
+    # eid[[str_c(e2, e1)]] <- eid[[str_c(e2, e1)]] + 1
   }
   w[i] <- eid[[str_c(e1, e2)]]
 }
 el_dynamic <- tibble(Source = efrom, Target = eto, Weight = w, Time = t[1:num_edges])
+write_csv(el_dynamic, "./data/elist_dynamic.csv")
 
 # edge list for aggregated graph 
 elist <- str_c(efrom, eto) %>% 
