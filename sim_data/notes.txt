@@ -1,0 +1,44 @@
+Number of players: 4
+Types of activities: Spawn parts, Teleport parts, Assemble parts, Dispose (4)
+Stage 1 - Tires and rims
+    Parts
+        rims x 4
+        tires x 4
+        axles x 4
+        connecting plates x 2
+    Works
+        rim + tire + axle x 4
+        connecting two axles x 2
+    Considerations
+Stage 2 - Chassis
+    Parts
+        2x8-plate x 2
+        2x2-plate x 2
+        1x3-block x 3
+        slope x 2
+    Works
+        connecting long plates x 2
+        on-axles x 1
+        front x 4
+        on-body x 1
+    Considerations
+Stage 3 - Windshield & front body
+    Parts
+        windshield x 1
+        1x4-block x 1
+        1x1-block x 4
+        1x2-slope x 2
+    Works
+        put-on windshield x 1
+        rest blocks x 6
+    Considerations
+Stage 4 - Ceiling & rear body
+    Parts
+        1x3-block x 1
+        1x1-block x 4
+        1x2-slope x 2
+        4x6-plate x 1
+    Works
+        blocks x 6
+        plate x 1
+        on-body x 1
