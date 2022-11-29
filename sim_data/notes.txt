@@ -1,14 +1,18 @@
 Number of players: 4
-Types of activities: Spawn parts, Teleport parts, Assemble parts, Dispose (4)
-Stage 1 - Tires and rims
+Types of activities: Spawn parts, Teleport parts, Assemble parts, Inspection, Dispose (4)
+    Sourcing: Spawn parts
+    Manufacturing: Teleport parts, Assemble parts
+    Inspection: Inspection
+Stage 1 - Wheel sets
     Parts
         rims x 4
         tires x 4
         axles x 4
         connecting plates x 2
     Works
-        rim + tire + axle x 4
-        connecting two axles x 2
+        (rim + tire) x 4
+        (wheels(2) + axle) x 2
+        (axle + axle) x 2
     Considerations
 Stage 2 - Chassis
     Parts
