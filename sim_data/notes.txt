@@ -2,32 +2,32 @@ Number of players: 4
 Types of activities: Spawn parts, Teleport parts, Assemble parts, Inspection, Dispose (4)
     Sourcing: Spawn parts
     Manufacturing: Teleport parts, Assemble parts
-    Inspection: Inspection
-Stage 1 - Wheel sets
-    Parts
-        rims x 4
-        tires x 4
-        axles x 4
-        connecting plates x 2
+    Inspection: Inspection (add chance of defection during inspection later)
+Stage 1 - Wheelsets x 2
+    Parts (14)
+        rims x 2
+        tires x 2
+        axles x 2
+        connecting plates x 1
     Works
-        (rim + tire) x 4
-        (wheels(2) + axle) x 2
-        (axle + axle) x 2
+        (rim + tire) x 2
+        (wheels(2) + axle) x 1
+        (axle + axle) x 1
     Considerations
 Stage 2 - Chassis
-    Parts
+    Parts (9)
         2x8-plate x 2
         2x2-plate x 2
         1x3-block x 3
         slope x 2
     Works
-        connecting long plates x 2
-        on-axles x 1
-        front x 4
-        on-body x 1
+        (long plate + long plate)
+        (connected plate + wheelsets)
+        (front bumper; three thin blocks + two slopes)
+        (chassis + front bumper)
     Considerations
 Stage 3 - Windshield & front body
-    Parts
+    Parts (8)
         windshield x 1
         1x4-block x 1
         1x1-block x 4
@@ -37,7 +37,7 @@ Stage 3 - Windshield & front body
         rest blocks x 6
     Considerations
 Stage 4 - Ceiling & rear body
-    Parts
+    Parts (8)
         1x3-block x 1
         1x1-block x 4
         1x2-slope x 2
