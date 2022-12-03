@@ -4,28 +4,31 @@ Types of activities: Spawn parts, Teleport parts, Assemble parts, Inspection, Di
     Manufacturing: Teleport parts, Assemble parts
     Inspection: Inspection (add chance of defection during inspection later)
 Stage 1 - Wheelsets x 2
-    Parts (14)
+    Parts (7)
         rims x 2
         tires x 2
         axles x 2
-        connecting plates x 1
+        connecting plates
     Works
         (rim + tire) x 2
-        (wheels(2) + axle) x 1
-        (axle + axle) x 1
-    Considerations
+        (wheels(2) + axle)
+        (axle + axle)
+        inspection
 Stage 2 - Chassis
     Parts (9)
-        2x8-plate x 2
-        2x2-plate x 2
-        1x3-block x 3
-        slope x 2
+        Base chassis
+            2x8-plate x 2
+            2x2-plate x 2
+        Front bumper & engine bay
+            1x3-block x 3
+            2x1-slope x 2
     Works
-        (long plate + long plate)
-        (connected plate + wheelsets)
-        (front bumper; three thin blocks + two slopes)
-        (chassis + front bumper)
-    Considerations
+        Base chassis
+            (long plate + long plate)
+            (connected plate + wheelsets)
+        Front bumper & engine bay
+            (three thin blocks + two slopes)
+        (chassis + front)
 Stage 3 - Windshield & front body
     Parts (8)
         windshield x 1
