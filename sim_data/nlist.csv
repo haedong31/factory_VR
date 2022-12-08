@@ -1,0 +1,21 @@
+Id,Label,Group
+1,player2 & SpawnPart,player2
+2,player2 & TeleportPart,player2
+3,player2 & Assemble,player2
+4,player2 & Inspection,player2
+5,player2 & Pass,player2
+6,player4 & SpawnPart,player4
+7,player4 & TeleportPart,player4
+8,player4 & Assemble,player4
+9,player4 & Inspection,player4
+10,player4 & Pass,player4
+11,player3 & SpawnPart,player3
+12,player3 & TeleportPart,player3
+13,player3 & Assemble,player3
+14,player3 & Inspection,player3
+15,player3 & Pass,player3
+16,player1 & SpawnPart,player1
+17,player1 & TeleportPart,player1
+18,player1 & Assemble,player1
+19,player1 & Inspection,player1
+20,player1 & Pass,player1

@@ -2,6 +2,9 @@
 /MultiplayerUnitySimulation-master/
 /data/Kevin-PPG/
 
+# Files
+*.asv
+
 # History files
 .Rhistory
 .Rapp.history
