@@ -44,9 +44,10 @@ gen_elist <- function(log_df, nlist) {
 log_df <- read_csv("./sim_data/assembly_line_4players.csv")
 nlist <- gen_nlist(log_df)
 elist <- gen_elist(log_df, nlist)
+# write_csv(nlist, "./sim_data/nlist.csv")
+# write_csv(elist, "./sim_data/elist.csv")
 
-
-##### Data import and preparation -----
+##### Real (toy) data -----
 p1 <- read_delim("./data/data_haedong_orig.txt", 
                  delim = ",", col_names = FALSE)
 colnames(p1) <- c("action", "time")
@@ -65,11 +66,9 @@ p2 <- p2 %>% select(action, player, time)
 
 log_df <- bind_rows(p1, p2)
 log_df <- log_df %>% arrange(time)
-log_df$time <- str_c(hour(log_df$time),":",minute(log_df$time),":",second(log_df$time))
+log_df <- rename(log_df, time_stamp = time)
 
-##### Node & edge lists (undirected) -----
-# node list
 nlist <- gen_nlist(log_df)
 elist <- gen_elist(log_df, nlist)
 # write_csv(nlist, "./data/nlist.csv")
-# rite_csv(el_dynamic, "./data/elist_dynamic.csv")
+# write_csv(el_dynamic, "./data/elist_dynamic.csv")
