@@ -1,8 +1,8 @@
 Number of players: 4
-Types of activities: Spawn parts, Teleport parts, Assemble parts, Inspection, Dispose (4)
+Types of activities: Spawn parts, Teleport parts, Assemble parts, Inspection, Pass
     Sourcing: Spawn parts
     Manufacturing: Teleport parts, Assemble parts
-    Inspection: Inspection (add chance of defection during inspection later)
+    Test: Inspection, Pass (add chance of defection during inspection later)
 Stage 1 - Wheelsets x 2
     Parts (7)
         rims x 2
@@ -49,4 +49,3 @@ Stage 4 - Body & ceiling
         Ceiling (1)
             4x6-plate x 1
     Works
-    
