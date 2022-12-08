@@ -1,6 +1,50 @@
 library(tidyverse)
 library(lubridate)
-library(igraph)
+
+gen_nlist <- function(log_df) {
+  players <- unique(log_df$player)
+  acts <- unique(log_df$action)
+  num_acts <- length(acts)
+  num_nodes <- num_acts*length(players)
+  
+  nlabel <- vector("character", length = num_nodes)
+  for (i in seq_along(players)){
+    nlabel[(1+num_acts*(i-1)):(i*num_acts)] <- str_c(players[i], " & ", acts)
+  }
+  
+  nid <- seq(1, num_nodes)
+  ngroup <- vector("character", length = num_nodes)
+  for (i in seq_along(players)) {
+    ngroup[(1+num_acts*(i-1)):(i*num_acts)] <- players[i]
+  }
+  return(tibble(Id = nid, Label = nlabel, Group = ngroup))
+}
+
+gen_elist <- function(log_df, nlist) {
+  num_edges <- nrow(log_df)-1
+  efrom_list <- vector(mode = "character", length = num_edges)
+  eto_list <- vector(mode = "character", length = num_edges)
+  d <- vector(mode = "numeric", length = num_edges)
+  
+  for (i in 1:num_edges) {
+    efrom <- str_c(log_df$player[i], " & ", log_df$action[i])
+    efrom_idx <- which(str_detect(nlist$Label, efrom))
+    efrom_list[i] <- nlist$Id[efrom_idx]
+    
+    eto <- str_c(log_df$player[i+1], " & ", log_df$action[i+1])
+    eto_idx <- which(str_detect(nlist$Label, eto))
+    eto_list[i] <- nlist$Id[eto_idx]
+    
+    d[i] <- log_df$time_stamp[i+1]-log_df$time_stamp[i]
+  }
+  return(tibble(Source = efrom_list, Target = eto_list, Duration = d))
+}
+
+##### Simulated data -----
+log_df <- read_csv("./sim_data/assembly_line_4players.csv")
+nlist <- gen_nlist(log_df)
+elist <- gen_elist(log_df, nlist)
+
 
 ##### Data import and preparation -----
 p1 <- read_delim("./data/data_haedong_orig.txt", 
@@ -19,88 +63,13 @@ p2$time <- mdy_hms(p2$time)
 p2 <- p2 %>% mutate(player = "player2")
 p2 <- p2 %>% select(action, player, time)
 
-df <- bind_rows(p1, p2)
-df <- df %>% arrange(time)
-df$time <- str_c(hour(df$time),":",minute(df$time),":",second(df$time))
-write_csv(df, "./data/agg_edge_list.csv")
+log_df <- bind_rows(p1, p2)
+log_df <- log_df %>% arrange(time)
+log_df$time <- str_c(hour(log_df$time),":",minute(log_df$time),":",second(log_df$time))
 
 ##### Node & edge lists (undirected) -----
 # node list
-players <- unique(df$player)
-acts <- unique(df$action)
-num_acts <- length(acts)
-num_nodes <- num_acts * length(players)
-nid <- seq(1, num_nodes)
-nlabel <- vector("character", length = num_nodes)
-for (i in seq_along(players)){
-  nlabel[(1+num_acts*(i-1)):(i*num_acts)] <- str_c(players[i], " & ", acts)
-}
-ngroup <- vector("character", length = num_nodes)
-for (i in seq_along(players)) {
-  ngroup[(1+num_acts*(i-1)):(i*num_acts)] <- players[i]
-}
-nlist <- tibble(Id = nid, Label = nlabel, Group = ngroup)
+nlist <- gen_nlist(log_df)
+elist <- gen_elist(log_df, nlist)
 # write_csv(nlist, "./data/nlist.csv")
-
-# edge list for dynamic graph
-num_edges <- nrow(df)-1
-efrom <- vector(mode = "character", length = num_edges)
-eto <- vector(mode = "character", length = num_edges)
-eid <- vector("list", length = num_nodes^2)
-for (i in 1:num_nodes) {
-  eid[(1+num_nodes*(i-1)):(i*num_nodes)] <- 0
-  names(eid)[(1+num_nodes*(i-1)):(i*num_nodes)] <- str_c(as.character(i),nid)
-}
-w <- vector("numeric", length = num_edges)
-t <- df$time
-
-for (i in 1:num_edges) {
-  if (df$action[i]=="Spawn Pieces" & df$player[i]==players[1]) {
-    efrom[[i]] <- "1"
-  } else if (df$action[i]=="Teleport Part" & df$player[i]==players[1]) {
-    efrom[[i]] <- "2"
-  } else if (df$action[i]=="Spawn Pieces" & df$player[i]==players[2]) {
-    efrom[[i]] <- "3"
-  } else {
-    efrom[[i]] <- "4"
-  }
-  
-  if (df$action[i+1]=="Spawn Pieces" & df$player[i+1]==players[1]) {
-    eto[[i]] <- "1"
-  } else if (df$action[i+1]=="Teleport Part" & df$player[i+1]==players[1]) {
-    eto[[i]] <- "2"
-  } else if (df$action[i+1]=="Spawn Pieces" & df$player[i+1]==players[2]) {
-    eto[[i]] <- "3"
-  } else {
-    eto[[i]] <- "4"
-  }
-  
-  e1 <- efrom[[i]]
-  e2 <- eto[[i]]
-  if (e1 == e2) {
-    eid[[str_c(e1, e2)]] <- eid[[str_c(e1, e2)]] + 1
-  } else{
-    eid[[str_c(e1, e2)]] <- eid[[str_c(e1, e2)]] + 1
-    # eid[[str_c(e2, e1)]] <- eid[[str_c(e2, e1)]] + 1
-  }
-  w[i] <- eid[[str_c(e1, e2)]]
-}
-el_dynamic <- tibble(Source = efrom, Target = eto, Weight = w, Time = t[1:num_edges])
-write_csv(el_dynamic, "./data/elist_dynamic.csv")
-
-# edge list for aggregated graph 
-elist <- str_c(efrom, eto) %>% 
-  unique() %>% 
-  sort()
-efrom <- vector("character", length = length(elist))
-eto <- vector("character", length = length(elist))
-w <- vector("numeric", length = length(elist))
-for (i in seq_along(elist)){
-  enodes <- strsplit(elist[i], "")[[1]]
-  efrom[i] <- enodes[1]
-  eto[i] <- enodes[2]
-  w[i] <- eid[[elist[i]]]
-}
-el <- tibble(Source = efrom, Targt = eto, Weight = w)
-
-##### Network stats -----
+# rite_csv(el_dynamic, "./data/elist_dynamic.csv")
