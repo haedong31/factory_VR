@@ -40,12 +40,19 @@ gen_elist <- function(log_df, nlist) {
   return(tibble(Source = efrom_list, Target = eto_list, Duration = d))
 }
 
-##### Simulated data -----
+##### Simulated data 1 -----
 log_df <- read_csv("./sim_data/assembly_line_4players.csv")
 nlist <- gen_nlist(log_df)
 elist <- gen_elist(log_df, nlist)
-# write_csv(nlist, "./sim_data/nlist.csv")
-# write_csv(elist, "./sim_data/elist.csv")
+write_csv(nlist, "./sim_data/assembly_line_4players_nlist.csv")
+write_csv(elist, "./sim_data/assembly_line_4players_elist.csv")
+
+##### Simulated data 2 -----
+log_df <- read_csv("./sim_data/craft_4players.csv")
+nlist <- gen_nlist(log_df)
+elist <- gen_elist(log_df, nlist)
+write_csv(nlist, "./sim_data/craft_4players_nlist.csv")
+write_csv(elist, "./sim_data/craft_4players_elist.csv")
 
 ##### Real (toy) data -----
 p1 <- read_delim("./data/data_haedong_orig.txt", 
