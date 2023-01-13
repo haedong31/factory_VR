@@ -40,6 +40,36 @@ gen_elist <- function(log_df, nlist) {
   return(tibble(Source = efrom_list, Target = eto_list, Duration = d))
 }
 
+
+alog <- read_csv("./sim_data/assembly_line_4players8.csv")
+tframe <- 1
+players <- str_c("player",seq(1,4))
+
+col_names <- c("t","s1","t1","s2","t2","s3","t3","s4","t4")
+tail(alog$time_stamp, 1)
+
+/tframe
+
+for (i in 1:) {
+  t0 <- (i-1)*tframe
+  t1 <- i*tframe
+  
+  sub_alog <- alog[findInterval(alog$time_stamp, c(170, 180), left.open = TRUE) == 1L,]
+  if (nrow(sub_alog != 0)) {
+    r <- vector('list', length = length(col_names))
+    names(r) <- col_names
+    
+    for (j in seq_along(players)) {
+      
+      if (any(sub_alog$player == players[j])) {
+        sub_alog$player == players[j]
+        r[[]] # source
+        r[[]] # target
+      }
+    }
+  }
+}
+
 ##### Simulated data 1 -----
 log_df <- read_csv("./sim_data/assembly_line_4players.csv")
 nlist <- gen_nlist(log_df)
