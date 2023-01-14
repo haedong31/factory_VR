@@ -1,11 +1,18 @@
 library(tidyverse)
 library(lubridate)
 
+# input arguments
 alog <- read_csv("./sim_data/assembly_line_4players8.csv")
 tframe <- 1
-players <- str_c("player",seq(1,4))
+num_players <- 4
+
+players <- str_c("player",seq(1,num_players))
+# col_names <- c("t","s1","t1","s2","t2","s3","t3","s4","t4")
+col_names <- "t"
+for (i in 1:num_players) {
+  col_names <- c(col_names, str_c(c("s","t"), i))
+}
 acts <- unique(alog$action)
-col_names <- c("t","s1","t1","s2","t2","s3","t3","s4","t4")
 num_iters <- ceiling(tail(alog$time_stamp, 1)/tframe)
 
 single_stk <- rep(0, length(players))
@@ -14,7 +21,9 @@ for (i in 1:num_iters) {
   # for a time window
   t0 <- (i-1)*tframe
   t1 <- i*tframe
-  sub_alog <- alog[findInterval(alog$time_stamp, c(t0,t1), left.open = TRUE) == 1L,]
+  sub_alog <- alog[findInterval
+                   (alog$time_stamp, c(t0,t1), 
+                     left.open = TRUE, rightmost.closed = TRUE) == 1L,]
   
   r <- vector('list', length = length(col_names))
   names(r) <- col_names
@@ -44,7 +53,7 @@ for (i in 1:num_iters) {
     for (j in seq_along(players)) {
       efrom <- rep(0, max_num_edges)
       eto <- rep(0, max_num_edges)
-
+      
       if (any(sub_alog$player == players[j])) {
         # for player j
         sub_alog_pj <- sub_alog[sub_alog$player == players[j],]
