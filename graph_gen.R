@@ -48,7 +48,7 @@ gen_elist2 <- function(alog, tframe, num_players) {
   }
   acts <- unique(alog$action)
   nid <- seq(1, length(acts))
-  ntbl <- tibble(ID = nid, Label = acts)
+  nlist <- tibble(ID = nid, Label = acts)
   
   num_iters <- ceiling(tail(alog$time_stamp, 1)/tframe)
   single_stk <- rep(0, length(players))
@@ -68,9 +68,9 @@ gen_elist2 <- function(alog, tframe, num_players) {
       r[[1]] <- t1
       r[-1] <- 0
       if (i == 1) {
-        etbl <- add_row(etbl, !!!r)
+        elist <- add_row(elist, !!!r)
       } else {
-        etbl <- add_row(etbl, !!!r)
+        elist <- add_row(elist, !!!r)
       }
     } else {
       # maximum number of edges 
@@ -131,27 +131,38 @@ gen_elist2 <- function(alog, tframe, num_players) {
         }
       }
       if (i == 1) {
-        etbl <- tibble(!!!r)
+        elist <- tibble(!!!r)
       } else {
-        etbl <- add_row(etbl, !!!r)
+        elist <- add_row(elist, !!!r)
       }
     }
   }
   o <- vector('list', length = 2)
-  o[[1]] <- ntbl
-  o[[2]] <- etbl
+  o[[1]] <- nlist
+  o[[2]] <- elist
   return(o)
 }
 
 ##### Simulation data (8 orders) / separate graphs -----
+# assembly
 alog <- read_csv("./sim_data/assembly_line_4players8.csv")
 tframe <- 1
 num_players <- 4
 g <- gen_elist2(alog, tframe, num_players)
-ntbl <- g[[1]]
-etbl <- g[[2]]
-write_csv(ntbl, "./sim_data/assembly_line_4players8_nlist.csv")
-write_csv(etbl, "./sim_data/assembly_line_4players8_elist.csv")
+nlist <- g[[1]]
+elist <- g[[2]]
+write_csv(nlist, "./sim_data/assembly_line_4players8_nlist.csv")
+write_csv(elist, "./sim_data/assembly_line_4players8_elist.csv")
+
+# craft
+alog <- read_csv("./sim_data/craft_4players8.csv")
+tframe <- 1
+num_players <- 4
+g <- gen_elist2(alog, tframe, num_players)
+nlist <- g[[1]]
+elist <- g[[2]]
+write_csv(nlist, "./sim_data/craft_4players8_nlist.csv")
+write_csv(elist, "./sim_data/craft_4players8_elist.csv")
 
 ##### Simulated data 1 -----
 log_df <- read_csv("./sim_data/assembly_line_4players.csv")
