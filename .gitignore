@@ -1,5 +1,6 @@
 # Folders
 /MultiplayerUnitySimulation-master/
+/DynamicGraphMetrics/
 /data/Kevin-PPG/
 
 # Files
@@ -44,8 +45,6 @@ vignettes/*.pdf
 
 # R Environment Variables
 .Renviron
-
-*.m
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
