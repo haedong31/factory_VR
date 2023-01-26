@@ -14,75 +14,79 @@ cps_aseembly = graph_sim_cps(nlist_assembly,elist_assembly);
 
 t1 = unique(elist_craft.t);
 t2 = unique(elist_assembly.t);
-ta = cps_aseembly;
+tearly = min(t1(end),t2(end));
+tlate = max(t1(end),t2(end));
 
-figure('Color','w','Position',[50,50,1000,540])
+f = figure('Color','w','Position',[50,50,1000,540]);
+orient(f,'landscape')
 tle = tiledlayout(2,3);
 xlabel(tle,"Time (s)", 'FontWeight','bold')
 
 nexttile
-plot(cps_craft(:,1,2),'LineWidth',1.5,'Color','red')
-xline(ta)
+plot(t1,cps_craft(:,1,2),'LineWidth',1.5,'Color','red')
 hold on
-plot(cps_aseembly(:,1,2),'LineWidth',1.5,'Color','blue')
+plot(t2,cps_aseembly(:,1,2),'LineWidth',1.5,'Color','blue')
+hold off
+xline(tearly,'LineWidth',1.5,'Color','blue')
+xline(tlate,'LineWidth',1.5,'Color','red')
 xlim('tight')
 ylim([0,150])
-ylabel("Distance (P1&P2)",'FontWeight','bold')
+ylabel("CPS (P1&P2)",'FontWeight','bold')
+grid on
+legend(["Craft","Mass"],'Location','northwest')
+set(gca,'FontWeight','bold','LineWidth',1.5)
+
+nexttile
+plot(t1,cps_craft(:,2,2),'LineWidth',1.5,'Color','red')
+hold on
+plot(t2,cps_aseembly(:,2,2),'LineWidth',1.5,'Color','blue')
+xlim('tight')
+ylim([0,150])
+ylabel("CPS (P1&P3)",'FontWeight','bold')
 grid on
 set(gca,'FontWeight','bold','LineWidth',1.5)
 hold off
 
 nexttile
-plot(cps_craft(:,2,2),'LineWidth',1.5,'Color','red')
+plot(t1,cps_craft(:,3,2),'LineWidth',1.5,'Color','red')
 hold on
-plot(cps_aseembly(:,2,2),'LineWidth',1.5,'Color','blue')
+plot(t2,cps_aseembly(:,3,2),'LineWidth',1.5,'Color','blue')
 xlim('tight')
 ylim([0,150])
-ylabel("Distance (P1&P3)",'FontWeight','bold')
+ylabel("CPS (P1&P4)",'FontWeight','bold')
 grid on
 set(gca,'FontWeight','bold','LineWidth',1.5)
 hold off
 
 nexttile
-plot(cps_craft(:,3,2),'LineWidth',1.5,'Color','red')
+plot(t1,cps_craft(:,4,2),'LineWidth',1.5,'Color','red')
 hold on
-plot(cps_aseembly(:,3,2),'LineWidth',1.5,'Color','blue')
+plot(t2,cps_aseembly(:,4,2),'LineWidth',1.5,'Color','blue')
 xlim('tight')
 ylim([0,150])
-ylabel("Distance (P1&P4)",'FontWeight','bold')
+ylabel("CPS (P2&P3)",'FontWeight','bold')
 grid on
 set(gca,'FontWeight','bold','LineWidth',1.5)
 hold off
 
 nexttile
-plot(cps_craft(:,4,2),'LineWidth',1.5,'Color','red')
+plot(t1,cps_craft(:,5,2),'LineWidth',1.5,'Color','red')
 hold on
-plot(cps_aseembly(:,4,2),'LineWidth',1.5,'Color','blue')
+plot(t2,cps_aseembly(:,5,2),'LineWidth',1.5,'Color','blue')
 xlim('tight')
 ylim([0,150])
-ylabel("Distance (P2&P3)",'FontWeight','bold')
+ylabel("CPS (P2&P4)",'FontWeight','bold')
 grid on
 set(gca,'FontWeight','bold','LineWidth',1.5)
 hold off
 
 nexttile
-plot(cps_craft(:,5,2),'LineWidth',1.5,'Color','red')
+plot(t1,cps_craft(:,6,2),'LineWidth',1.5,'Color','red')
 hold on
-plot(cps_aseembly(:,5,2),'LineWidth',1.5,'Color','blue')
+plot(t2,cps_aseembly(:,6,2),'LineWidth',1.5,'Color','blue')
 xlim('tight')
 ylim([0,150])
-ylabel("Distance (P2&P4)",'FontWeight','bold')
-grid on
-set(gca,'FontWeight','bold','LineWidth',1.5)
-hold off
-
-nexttile
-plot(cps_craft(:,6,2),'LineWidth',1.5,'Color','red')
-hold on
-plot(cps_aseembly(:,6,2),'LineWidth',1.5,'Color','blue')
-xlim('tight')
-ylim([0,150])
-ylabel("Distance (P3&P4)",'FontWeight','bold')
+ylabel("CPS (P3&P4)",'FontWeight','bold')
 grid on
 set(gca,'FontWeight','bold','LineWidth',1.5)
 hold off
