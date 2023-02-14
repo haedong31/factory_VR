@@ -11,12 +11,18 @@ class ActionLogger(object):
         self.n = 0
         self.alog = []
         self.tlog = []
-
+        self.module_log = []
+        self.module_compt_log = []
+    
     def write_act(self,a,t):
         self.clock += t
         self.n += 1
         self.alog.append(a)
         self.tlog.append(self.clock)
+    
+    def write_module_info(self,m):
+        self.module_log.append(m)
+        self.module_compt_log.append(self.clock)
 
 def learning_curve(a,b,x):
     return a*np.power(x,-b)
@@ -164,7 +170,10 @@ for i in range(num_order):
          learning_curve(assemble_meant0,b1[0],i+1)]
     make_wheelset(logger1,t,1)
     make_wheelset(logger1,t,1)    
+    logger1.write_module_info('wheelset')
+
     logger1.write_act("Pass",learning_curve(pass_meant0,b1[0],i+1))
+    logger1.write_module_info('finish1')
 
 # Station 2 - Chassis
 upstream_parts_idx = np.where(np.array(logger1.alog)=="Pass")[0]
@@ -181,6 +190,7 @@ t = [learning_curve(spawn_meant0,b1[1],i+1),
      learning_curve(assemble_meant0,b1[1],i+1)]
 make_chassis_base(logger2,t,2)
 num_base += 1
+logger2.write_module_info('base')
 
 while True:
     # need to receive wheelsets from upstream
@@ -191,15 +201,21 @@ while True:
              learning_curve(assemble_meant0,b1[1],num_base+1)]
         make_chassis_base(logger2,t,2)
         num_base += 1
+        logger2.write_module_info('base')
     else:
         num_received_up += 1
         t = [learning_curve(spawn_meant0,b1[1],num_complete+1), 
              learning_curve(teleport_meant0,b1[1],num_complete+1), 
              learning_curve(assemble_meant0,b1[1],num_complete+1)]
         make_front(logger2,t,2)
+        logger2.write_module_info('front')
+        
         finish_station2(logger2,t,2)
+        logger2.write_module_info('module2')
+        
         logger2.write_act("Pass",RNG.Expon(learning_curve(pass_meant0,b1[1],num_complete+1),2))
         num_complete += 1
+        logger2.write_module_info('finish2')
     # completed all necessary chassis bases
     if num_base == num_order:
         break
@@ -214,10 +230,15 @@ while num_received_up < num_order:
         t = [learning_curve(spawn_meant0,b1[1],num_complete+1), 
              learning_curve(teleport_meant0,b1[1],num_complete+1), 
              learning_curve(assemble_meant0,b1[1],num_complete+1)]
-        make_front(logger2,t,2)        
+        make_front(logger2,t,2)
+        logger2.write_module_info('front')
+        
         finish_station2(logger2,t,2)
+        logger2.write_module_info('module2')
+        
         logger2.write_act("Pass",RNG.Expon(learning_curve(pass_meant0,b1[1],num_complete+1),2))
         num_complete += 1
+        logger2.write_module_info('finish2')
 
 # Station 3 - Windshield & steering
 upstream_parts_idx = np.where(np.array(logger2.alog)=="Pass")[0]
@@ -234,6 +255,7 @@ t = [learning_curve(spawn_meant0,b1[2],num_steer+1),
      learning_curve(assemble_meant0,b1[2],num_steer+1)]
 make_steering(logger3,t,3)
 num_steer += 1
+logger3.write_module_info('steer')
 
 while True:
     # need to receive chassis from upstream
@@ -244,14 +266,18 @@ while True:
              learning_curve(assemble_meant0,b1[2],num_steer+1)]
         make_steering(logger3,t,3)
         num_steer += 1
+        logger3.write_module_info('steer')
     else:
         num_received_up += 1
         t = [learning_curve(spawn_meant0,b1[2],num_complete+1), 
              learning_curve(teleport_meant0,b1[2],num_complete+1), 
              learning_curve(assemble_meant0,b1[2],num_complete+1)]
         finish_station3(logger3,t,3)
+        logger3.write_module_info('module3')
+        
         logger3.write_act("Pass",RNG.Expon(learning_curve(pass_meant0,b1[2],num_complete+1),3))
         num_complete += 1
+        logger3.write_module_info('finish3')
 
     # completed all necessary front body frames
     if num_steer == num_order:
@@ -268,8 +294,11 @@ while num_received_up < num_order:
              learning_curve(teleport_meant0,b1[2],num_complete+1), 
              learning_curve(assemble_meant0,b1[2],num_complete+1)]
         finish_station3(logger3,t,3)
+        logger3.write_module_info('module3')
+        
         logger3.write_act("Pass",RNG.Expon(learning_curve(pass_meant0,b1[2],num_complete+1),3))
         num_complete += 1
+        logger3.write_module_info('finish3')
 
 # Station 4 -  Body & ceiling
 upstream_parts_idx = np.where(np.array(logger3.alog)=="Pass")[0]
@@ -286,6 +315,7 @@ t = [learning_curve(spawn_meant0,b1[2],num_body+1),
      learning_curve(assemble_meant0,b1[2],num_body+1)]
 make_body_frame(logger4,t,4)
 num_body += 1
+logger4.write_module_info('body')
 
 while True:
     if (logger4.clock<upstream_parts_time[num_received_up]) or (num_body<=num_received_up):
@@ -295,14 +325,18 @@ while True:
              learning_curve(assemble_meant0,b1[2],num_body+1)]
         make_body_frame(logger4,t,4)
         num_body += 1
+        logger4.write_module_info('body')
     else:
         num_received_up += 1
         t = [learning_curve(spawn_meant0,b1[2],num_complete+1), 
              learning_curve(teleport_meant0,b1[2],num_complete+1), 
              learning_curve(assemble_meant0,b1[2],num_complete+1)]
         finish_station4(logger4,t,4)
+        logger4.write_module_info('module4')
+        
         logger4.write_act("Pass",RNG.Expon(learning_curve(pass_meant0,b1[3],num_complete+1),4))
         num_complete += 1
+        logger4.write_module_info('finish4')
 
     # completed all necessary body frames
     if num_body == num_order:
@@ -319,8 +353,11 @@ while num_received_up < num_order:
              learning_curve(teleport_meant0,b1[2],num_complete+1), 
              learning_curve(assemble_meant0,b1[2],num_complete+1)]
         finish_station4(logger4,t,4)
+        logger4.write_module_info('module4')
+        
         logger4.write_act("Pass",RNG.Expon(learning_curve(pass_meant0,b1[3],num_complete+1),4))
         num_complete += 1
+        logger4.write_module_info('finish4')
 
 # player,action,time_stamp
 log_df1 = pd.DataFrame({'player':"player1", 'action':logger1.alog, 'time_stamp':logger1.tlog})
@@ -330,6 +367,13 @@ log_df4 = pd.DataFrame({'player':"player4", 'action':logger4.alog, 'time_stamp':
 log_df = pd.concat([log_df1,log_df2,log_df3,log_df4])
 log_df = log_df.sort_values(by=['time_stamp'],ascending=True)
 log_df.to_csv(save_dir/('mass'+str(num_order)+'.csv'),index=False)
+
+module_info_df1 = pd.DataFrame({'player':'player1', 'item':logger1.module_log, 'time_stamp':logger1.module_compt_log})
+module_info_df2 = pd.DataFrame({'player':'player2', 'item':logger2.module_log, 'time_stamp':logger2.module_compt_log})
+module_info_df3 = pd.DataFrame({'player':'player3', 'item':logger3.module_log, 'time_stamp':logger3.module_compt_log})
+module_info_df4 = pd.DataFrame({'player':'player4', 'item':logger4.module_log, 'time_stamp':logger4.module_compt_log})
+module_info_df = pd.concat([module_info_df1,module_info_df2,module_info_df3,module_info_df4])
+module_info_df.to_csv(save_dir/('mass'+str(num_order)+'_minfo.csv'),index=False)
 
 #%% Craft production
 logger1 = ActionLogger()

@@ -144,25 +144,28 @@ gen_elist2 <- function(alog, tframe, num_players) {
 }
 
 ##### Simulation data (8 orders) / separate graphs -----
-# assembly
-alog <- read_csv("./sim_data/assembly_line_4players8.csv")
-tframe <- 1
-num_players <- 4
-g <- gen_elist2(alog, tframe, num_players)
-nlist <- g[[1]]
-elist <- g[[2]]
-write_csv(nlist, "./sim_data/assembly_line_4players8_nlist.csv")
-write_csv(elist, "./sim_data/assembly_line_4players8_elist.csv")
+exp_num <- "exp3"
+data_dir <- str_c("./sim_data/",exp_num)
 
-# craft
-alog <- read_csv("./sim_data/craft_4players8.csv")
+# mass production
+alog <- read_csv(str_c(data_dir,"/mass8.csv"))
 tframe <- 1
 num_players <- 4
 g <- gen_elist2(alog, tframe, num_players)
 nlist <- g[[1]]
 elist <- g[[2]]
-write_csv(nlist, "./sim_data/craft_4players8_nlist.csv")
-write_csv(elist, "./sim_data/craft_4players8_elist.csv")
+write_csv(nlist, str_c(data_dir,"/mass8_nlist.csv"))
+write_csv(elist, str_c(data_dir,"/mass8_elist.csv"))
+
+# craft production
+alog <- read_csv(str_c(data_dir,"/craft8.csv"))
+tframe <- 1
+num_players <- 4
+g <- gen_elist2(alog, tframe, num_players)
+nlist <- g[[1]]
+elist <- g[[2]]
+write_csv(nlist, str_c(data_dir,"/craft8_nlist.csv"))
+write_csv(elist, str_c(data_dir,"/craft8_elist.csv"))
 
 ##### Simulated data 1 -----
 log_df <- read_csv("./sim_data/assembly_line_4players.csv")
