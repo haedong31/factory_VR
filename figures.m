@@ -1,13 +1,47 @@
+%% Learning curves
+clc
+clearvars
+close all
+
+learning_curve = @(a,b,x) a.*power(x,-b);
+
+r = 0.9:-0.1:0.5;
+a = 1;
+b = -(log(r)./log(2));
+x = 1:100;
+
+y = NaN(length(x),length(r));
+for i=1:length(r)
+    y(:,i) = learning_curve(a,b(i),x);
+end
+
+figure('Color','w')
+newcolors = {'#F00','#F80','#FF0','#0B0','#00F'};
+colororder(newcolors)
+plot(x,y(:,1),'LineWidth',1.5)
+hold on
+for i=2:length(r)
+    plot(x,y(:,i),'LineWidth',1.5)
+end
+hold off
+xlabel("n^{th} unit to produce")
+ylabel("Time")
+legend(["90%","80%","70%","60%","50%"])
+set(gca,'FontWeight','bold','LineWidth',1.5)
+
 %% CPS assesment
 clc
 clearvars
 close all
 
-nlist_craft = readtable("./sim_data/craft_4players8_nlist.csv");
-elist_craft = readtable("./sim_data/craft_4players8_elist.csv");
+exp_num = "exp3";
+data_dir = fullfile("sim_data",exp_num);
 
-nlist_assembly = readtable("./sim_data/assembly_line_4players8_nlist.csv");
-elist_assembly = readtable("./sim_data/assembly_line_4players8_elist.csv");
+minfo = readtable(fullfile(data_dir,"mass8_minfo.csv"));
+nlist_craft = readtable(fullfile(data_dir,"craft8_nlist.csv"));
+elist_craft = readtable(fullfile(data_dir,"craft8_elist.csv"));
+nlist_assembly = readtable(fullfile(data_dir,"mass8_nlist.csv"));
+elist_assembly = readtable(fullfile(data_dir,"mass8_elist.csv"));
 
 cps_craft = graph_sim_cps(nlist_craft,elist_craft);
 cps_aseembly = graph_sim_cps(nlist_assembly,elist_assembly);
@@ -17,15 +51,37 @@ t2 = unique(elist_assembly.t);
 tearly = min(t1(end),t2(end));
 tlate = max(t1(end),t2(end));
 
+c = parula(4);
+
 f = figure('Color','w','Position',[50,50,1000,540]);
 orient(f,'landscape')
 tle = tiledlayout(2,3);
+title(tle,"Same Learning Curves (60% & 70%)",'FontWeight','bold')
 xlabel(tle,"Time (s)", 'FontWeight','bold')
 
+% plot 1
 nexttile
+sub_minfo = minfo(string(minfo.player)=="player1"&string(minfo.item)=="finish1",:);
+specialt1 = sub_minfo.time_stamp;
+specialt_idx1 = find_specialt_idx(specialt1,t2);
+
+sub_minfo = minfo(string(minfo.player)=="player2"&string(minfo.item)=="base",:);
+specialt2 = sub_minfo.time_stamp;
+specialt_idx2 = find_specialt_idx(specialt2,t2);
+
+sub_minfo = minfo(string(minfo.player)=="player2"&string(minfo.item)=="finish2",:);
+specialt3 = sub_minfo.time_stamp;
+specialt_idx3 = find_specialt_idx(specialt3,t2);
+
 plot(t1,cps_craft(:,1,2),'LineWidth',1.5,'Color','red')
 hold on
 plot(t2,cps_aseembly(:,1,2),'LineWidth',1.5,'Color','blue')
+scatter(t2(specialt_idx1),cps_aseembly(specialt_idx1,1,2),30,'filled', ...
+    'MarkerFaceColor',c(1,:))
+scatter(t2(specialt_idx2),cps_aseembly(specialt_idx2,1,2),30,'filled', ...
+    'MarkerFaceColor',c(2,:))
+scatter(t2(specialt_idx3),cps_aseembly(specialt_idx3,1,2),30,'filled', ...
+    'MarkerFaceColor',c(3,:))
 hold off
 xline(tearly,'LineWidth',1.5,'Color','blue')
 xline(tlate,'LineWidth',1.5,'Color','red')
@@ -33,65 +89,183 @@ xlim('tight')
 ylim([0,150])
 ylabel("CPS (P1&P2)",'FontWeight','bold')
 grid on
-legend(["Craft","Mass"],'Location','northwest')
+legend(["Craft","Mass","P1 Module","P2 Submodule","P2 Module"],'Location','northwest')
 set(gca,'FontWeight','bold','LineWidth',1.5)
 
+% plot 2
 nexttile
+sub_minfo = minfo(string(minfo.player)=="player1"&string(minfo.item)=="finish1",:);
+specialt1 = sub_minfo.time_stamp;
+specialt_idx1 = find_specialt_idx(specialt1,t2);
+
+sub_minfo = minfo(string(minfo.player)=="player3"&string(minfo.item)=="steer",:);
+specialt2 = sub_minfo.time_stamp;
+specialt_idx2 = find_specialt_idx(specialt2,t2);
+
+sub_minfo = minfo(string(minfo.player)=="player3"&string(minfo.item)=="finish3",:);
+specialt3 = sub_minfo.time_stamp;
+specialt_idx3 = find_specialt_idx(specialt3,t2);
+
 plot(t1,cps_craft(:,2,2),'LineWidth',1.5,'Color','red')
 hold on
 plot(t2,cps_aseembly(:,2,2),'LineWidth',1.5,'Color','blue')
+scatter(t2(specialt_idx1),cps_aseembly(specialt_idx1,2,2),30,'filled', ...
+    'MarkerFaceColor',c(1,:))
+scatter(t2(specialt_idx2),cps_aseembly(specialt_idx2,2,2),30,'filled', ...
+    'MarkerFaceColor',c(2,:))
+scatter(t2(specialt_idx3),cps_aseembly(specialt_idx3,2,2),30,'filled', ...
+    'MarkerFaceColor',c(3,:))
+hold off
 xlim('tight')
 ylim([0,150])
 ylabel("CPS (P1&P3)",'FontWeight','bold')
 grid on
+legend(["","","P1 Module","P3 Submodule","P3 Module"],'Location','northwest')
 set(gca,'FontWeight','bold','LineWidth',1.5)
-hold off
 
+% plot 3
 nexttile
+sub_minfo = minfo(string(minfo.player)=="player1"&string(minfo.item)=="finish1",:);
+specialt1 = sub_minfo.time_stamp;
+specialt_idx1 = find_specialt_idx(specialt1,t2);
+
+sub_minfo = minfo(string(minfo.player)=="player4"&string(minfo.item)=="body",:);
+specialt2 = sub_minfo.time_stamp;
+specialt_idx2 = find_specialt_idx(specialt2,t2);
+
+sub_minfo = minfo(string(minfo.player)=="player4"&string(minfo.item)=="finish4",:);
+specialt3 = sub_minfo.time_stamp;
+specialt_idx3 = find_specialt_idx(specialt3,t2);
+
 plot(t1,cps_craft(:,3,2),'LineWidth',1.5,'Color','red')
 hold on
 plot(t2,cps_aseembly(:,3,2),'LineWidth',1.5,'Color','blue')
+scatter(t2(specialt_idx1),cps_aseembly(specialt_idx1,3,2),30,'filled', ...
+    'MarkerFaceColor',c(1,:))
+scatter(t2(specialt_idx2),cps_aseembly(specialt_idx2,3,2),30,'filled', ...
+    'MarkerFaceColor',c(2,:))
+scatter(t2(specialt_idx3),cps_aseembly(specialt_idx3,3,2),30,'filled', ...
+    'MarkerFaceColor',c(3,:))
+hold off
 xlim('tight')
 ylim([0,150])
 ylabel("CPS (P1&P4)",'FontWeight','bold')
 grid on
+legend(["","","P1 Module","P4 Submodule","P4 Module"],'Location','northwest')
 set(gca,'FontWeight','bold','LineWidth',1.5)
-hold off
 
+% plot 4
 nexttile
+sub_minfo = minfo(string(minfo.player)=="player2"&string(minfo.item)=="base",:);
+specialt1 = sub_minfo.time_stamp;
+specialt_idx1 = find_specialt_idx(specialt1,t2);
+
+sub_minfo = minfo(string(minfo.player)=="player2"&string(minfo.item)=="finish2",:);
+specialt2 = sub_minfo.time_stamp;
+specialt_idx2 = find_specialt_idx(specialt2,t2);
+
+sub_minfo = minfo(string(minfo.player)=="player3"&string(minfo.item)=="steer",:);
+specialt3 = sub_minfo.time_stamp;
+specialt_idx3 = find_specialt_idx(specialt3,t2);
+
+sub_minfo = minfo(string(minfo.player)=="player3"&string(minfo.item)=="finish3",:);
+specialt4 = sub_minfo.time_stamp;
+specialt_idx4 = find_specialt_idx(specialt4,t2);
+
 plot(t1,cps_craft(:,4,2),'LineWidth',1.5,'Color','red')
 hold on
 plot(t2,cps_aseembly(:,4,2),'LineWidth',1.5,'Color','blue')
+scatter(t2(specialt_idx1),cps_aseembly(specialt_idx1,4,2),30,'filled', ...
+    'MarkerFaceColor',c(1,:))
+scatter(t2(specialt_idx2),cps_aseembly(specialt_idx2,4,2),30,'filled', ...
+    'MarkerFaceColor',c(2,:))
+scatter(t2(specialt_idx3),cps_aseembly(specialt_idx3,4,2),30,'filled', ...
+    'MarkerFaceColor',c(3,:))
+scatter(t2(specialt_idx4),cps_aseembly(specialt_idx4,4,2),30,'filled', ...
+    'MarkerFaceColor',c(4,:))
+hold off
 xlim('tight')
 ylim([0,150])
 ylabel("CPS (P2&P3)",'FontWeight','bold')
 grid on
+legend(["","","P2 Submodule","P2 Module","P3 Submodule","P3 Module"],'Location','northwest')
 set(gca,'FontWeight','bold','LineWidth',1.5)
-hold off
 
+% plot 5
 nexttile
+sub_minfo = minfo(string(minfo.player)=="player2"&string(minfo.item)=="base",:);
+specialt1 = sub_minfo.time_stamp;
+specialt_idx1 = find_specialt_idx(specialt1,t2);
+
+sub_minfo = minfo(string(minfo.player)=="player2"&string(minfo.item)=="finish2",:);
+specialt2 = sub_minfo.time_stamp;
+specialt_idx2 = find_specialt_idx(specialt2,t2);
+
+sub_minfo = minfo(string(minfo.player)=="player4"&string(minfo.item)=="body",:);
+specialt3 = sub_minfo.time_stamp;
+specialt_idx3 = find_specialt_idx(specialt3,t2);
+
+sub_minfo = minfo(string(minfo.player)=="player4"&string(minfo.item)=="finish4",:);
+specialt4 = sub_minfo.time_stamp;
+specialt_idx4 = find_specialt_idx(specialt4,t2);
+
 plot(t1,cps_craft(:,5,2),'LineWidth',1.5,'Color','red')
 hold on
 plot(t2,cps_aseembly(:,5,2),'LineWidth',1.5,'Color','blue')
+scatter(t2(specialt_idx1),cps_aseembly(specialt_idx1,5,2),30,'filled', ...
+    'MarkerFaceColor',c(1,:))
+scatter(t2(specialt_idx2),cps_aseembly(specialt_idx2,5,2),30,'filled', ...
+    'MarkerFaceColor',c(2,:))
+scatter(t2(specialt_idx3),cps_aseembly(specialt_idx3,5,2),30,'filled', ...
+    'MarkerFaceColor',c(3,:))
+scatter(t2(specialt_idx4),cps_aseembly(specialt_idx4,5,2),30,'filled', ...
+    'MarkerFaceColor',c(4,:))
 xlim('tight')
 ylim([0,150])
 ylabel("CPS (P2&P4)",'FontWeight','bold')
 grid on
+legend(["","","P2 Submodule","P2 Module","P4 Submodule","P4 Module"],'Location','northwest')
 set(gca,'FontWeight','bold','LineWidth',1.5)
 hold off
 
+% plot 6
 nexttile
+sub_minfo = minfo(string(minfo.player)=="player3"&string(minfo.item)=="steer",:);
+specialt1 = sub_minfo.time_stamp;
+specialt_idx1 = find_specialt_idx(specialt1,t2);
+
+sub_minfo = minfo(string(minfo.player)=="player3"&string(minfo.item)=="finish3",:);
+specialt2 = sub_minfo.time_stamp;
+specialt_idx2 = find_specialt_idx(specialt2,t2);
+
+sub_minfo = minfo(string(minfo.player)=="player4"&string(minfo.item)=="body",:);
+specialt3 = sub_minfo.time_stamp;
+specialt_idx3 = find_specialt_idx(specialt3,t2);
+
+sub_minfo = minfo(string(minfo.player)=="player4"&string(minfo.item)=="finish4",:);
+specialt4 = sub_minfo.time_stamp;
+specialt_idx4 = find_specialt_idx(specialt4,t2);
+
 plot(t1,cps_craft(:,6,2),'LineWidth',1.5,'Color','red')
 hold on
 plot(t2,cps_aseembly(:,6,2),'LineWidth',1.5,'Color','blue')
+scatter(t2(specialt_idx1),cps_aseembly(specialt_idx1,6,2),30,'filled', ...
+    'MarkerFaceColor',c(1,:))
+scatter(t2(specialt_idx2),cps_aseembly(specialt_idx2,6,2),30,'filled', ...
+    'MarkerFaceColor',c(2,:))
+scatter(t2(specialt_idx3),cps_aseembly(specialt_idx3,6,2),30,'filled', ...
+    'MarkerFaceColor',c(3,:))
+scatter(t2(specialt_idx4),cps_aseembly(specialt_idx4,6,2),30,'filled', ...
+    'MarkerFaceColor',c(4,:))
 xlim('tight')
 ylim([0,150])
 ylabel("CPS (P3&P4)",'FontWeight','bold')
 grid on
+legend(["","","P3 Submodule","P3 Module","P4 Submodule","P4 Module"],'Location','northwest')
 set(gca,'FontWeight','bold','LineWidth',1.5)
 hold off
 
-%% low-dimensional embedding for user-action space
+%% Low-dimensional embedding for user-action space
 clc
 close all
 clearvars
@@ -278,8 +452,8 @@ function out_mx = graph_sim_cps(nlist,elist)
             gfeat(j,:,3) = centrality(G{j},'outcloseness');
             gfeat(j,:,4) = centrality(G{j},'incloseness');
             gfeat(j,:,5) = centrality(G{j},'betweenness');
-            gfeat(j,:,6) = centrality(G{j},'pagerank','Importance',G{j}.Edges.Weight);
-            gfeat(j,:,7) = centrality(G{j},'hubs','Importance',G{j}.Edges.Weight);
+            gfeat(j,:,6) = centrality(G{j},'pagerank','Importance',G{j}.Edges.Weight,'MaxIterations',1000);
+            gfeat(j,:,7) = centrality(G{j},'hubs','Importance',G{j}.Edges.Weight,'MaxIterations',1000);
             
             % graph feature & similarity
             l = 0;
@@ -355,5 +529,12 @@ function gfeat = graph_feat(nlist,elist)
             gfeat(i,j,:,6) = centrality(G{j},'pagerank','Importance',G{j}.Edges.Weight);
             gfeat(i,j,:,7) = centrality(G{j},'hubs','Importance',G{j}.Edges.Weight);  
         end
+    end
+end
+
+function specialt_idx = find_specialt_idx(t,tt)
+    specialt_idx = NaN(length(t),1);
+    for i=1:length(t)
+        [~,specialt_idx(i)] = min(abs(tt-t(i)));
     end
 end
