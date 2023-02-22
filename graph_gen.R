@@ -144,7 +144,7 @@ gen_elist2 <- function(alog, tframe, num_players) {
 }
 
 ##### Simulation data (8 orders) / separate graphs -----
-exp_num <- "exp3"
+exp_num <- "exp1"
 data_dir <- str_c("./sim_data/",exp_num)
 
 # mass production
