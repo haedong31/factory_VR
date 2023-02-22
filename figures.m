@@ -29,12 +29,60 @@ ylabel("Time")
 legend(["90%","80%","70%","60%","50%"])
 set(gca,'FontWeight','bold','LineWidth',1.5)
 
+%% Snpashots of graphs
+clc
+clearvars
+close all
+
+exp_num = "exp1";
+data_dir = fullfile("sim_data",exp_num);
+
+nlist_craft = readtable(fullfile(data_dir,"craft8_nlist.csv"));
+elist_craft = readtable(fullfile(data_dir,"craft8_elist.csv"));
+nlist_mass = readtable(fullfile(data_dir,"mass8_nlist.csv"));
+elist_mass = readtable(fullfile(data_dir,"mass8_elist.csv"));
+
+nlist_craft.Properties.VariableNames = {'Name','Label'};
+nlist_craft.Name = string(nlist_craft.Name);
+nlist_mass.Properties.VariableNames = {'Name','Label'};
+nlist_mass.Name = string(nlist_mass.Name);
+
+% snap_pts = [floor(quantile(1:num_edges,0.25)),floor(quantile(1:num_edges,0.5)),...
+%     floor(quantile(1:num_edges,0.75)),floor(quantile(1:num_edges,1))];
+
+snap_pts = NaN(4,3);
+snap_pts([1,3],:) = repmat([10,40,80],2,1);
+snap_pts([2,4],:) = repmat([10,45,90],2,1);
+
+edge_cutoff = 16;
+Gsnaps_craft = take_snaps(nlist_craft,elist_craft,snap_pts,edge_cutoff);
+Gsnaps_mass = take_snaps(nlist_mass,elist_mass,snap_pts,edge_cutoff);
+
+f = figure('Color','w','Position',[50,50,1000,540]);
+orient(f,'landscape')
+tle = tiledlayout(2,3);
+title(tle,"Snapshots P1&P3",'FontWeight','bold')
+for i=1:3
+    subplot(2,3,i)
+    plot(Gsnaps_mass{1,i},'NodeLabel',nlist_mass.Label,'NodeColor','b','MarkerSize',10,...
+        'NodeFontSize',11,'NodeFontWeight','bold',...
+        'EdgeColor','b','LineWidth',Gsnaps_mass{1,i}.Edges.Weight,'Layout','auto')
+    set(gca,'Visible','off')
+    
+    subplot(2,3,i+3)
+    plot(Gsnaps_mass{3,i},'NodeLabel',nlist_mass.Label,'NodeColor','r','MarkerSize',10,...
+        'NodeFontSize',11,'NodeFontWeight','bold',...
+        'EdgeColor','r','LineWidth',Gsnaps_mass{3,i}.Edges.Weight,'Layout','auto')
+    set(gca,'Visible','off')
+end
+
+
 %% CPS assesment
 clc
 clearvars
 close all
 
-exp_num = "exp3";
+exp_num = "exp1";
 data_dir = fullfile("sim_data",exp_num);
 
 minfo = readtable(fullfile(data_dir,"mass8_minfo.csv"));
@@ -402,7 +450,7 @@ function out_mx = graph_sim_cps(nlist,elist)
     nlist.Properties.VariableNames = {'Name','Label'};
     nlist.Name = string(nlist.Name);
     num_nodes = size(nlist,1);
-    num_edges = length(tlist);
+    num_tframes = length(tlist);
     num_players = (size(elist,2)-1)/2;
     
     % initialize graphs
@@ -413,8 +461,8 @@ function out_mx = graph_sim_cps(nlist,elist)
         A{i} = adjacency(G{i});
     end
     
-    out_mx = NaN(num_edges,nchoosek(num_players,2),2); % num_edges x 4C2 x 2 (adj_spectl,feat_sim)
-    for i=1:num_edges
+    out_mx = NaN(num_tframes,nchoosek(num_players,2),2); % num_tframes x 4C2 x 2 (adj_spectl,feat_sim)
+    for i=1:num_tframes
         runningt = tlist(i);
         r = table2array(elist(elist.t==runningt,:));
         gfeat = NaN(num_players,num_nodes,7);
@@ -536,5 +584,60 @@ function specialt_idx = find_specialt_idx(t,tt)
     specialt_idx = NaN(length(t),1);
     for i=1:length(t)
         [~,specialt_idx(i)] = min(abs(tt-t(i)));
+    end
+end
+
+function Gsnaps = take_snaps(nlist,elist,snap_pts,edge_wcutoff)
+    tlist = unique(elist.t);
+    nlist.Properties.VariableNames = {'Name','Label'};
+    nlist.Name = string(nlist.Name);    
+
+    num_nodes = size(nlist,1);
+    num_tframes = length(tlist);
+    [num_players,num_snaps] = size(snap_pts);
+    
+    G = cell(num_players,1);
+    Gsnaps = cell(num_players,num_snaps);
+    for i=1:num_players
+        G{i} = digraph(zeros(num_nodes,num_nodes),nlist);
+    end
+    
+    % have graphs evolve
+    tpointer = ones(num_players,1);
+    for i=1:num_tframes
+        runningt = tlist(i);
+        r = table2array(elist(elist.t==runningt,:));
+
+        for j=1:size(r,1)
+            for k=1:num_players
+                s = r(j,2*k);
+                t = r(j,2*k+1);
+        
+                if (s==0)&&(t==0)
+                    % no update 
+                elseif xor(s==0,t==0)
+                    error("Invalid edge")
+                else
+                    [edge_exist,update_idx] = ismember([s,t],str2double(G{k}.Edges.EndNodes),'rows');
+                    if (all(edge_exist))
+                        w = G{k}.Edges.Weight;
+                        if (w(update_idx) >= edge_wcutoff)
+                            G{k}.Edges.Weight(update_idx) = w(update_idx)+(0.5)^(w(update_idx)-edge_wcutoff+1);
+                        else
+                            G{k}.Edges.Weight(update_idx) = w(update_idx)+1;
+                        end
+                    else
+                        G{k} = addedge(G{k},num2str(s),num2str(t),1);
+                    end
+                end
+            
+                if tpointer(k) <= num_snaps
+                    if i==snap_pts(k,tpointer(k))
+                        Gsnaps{k,tpointer(k)} = G{k};
+                        tpointer(k) = tpointer(k)+1;
+                    end
+                end
+            end
+        end
     end
 end
