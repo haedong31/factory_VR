@@ -101,13 +101,12 @@ tlate = max(t1(end),t2(end));
 
 c = parula(4);
 
-f = figure('Color','w','Position',[50,50,1000,540]);
+f = figure('Color','w','Position',[50,50,800,430]);
 orient(f,'landscape')
 tle = tiledlayout(2,3);
-title(tle,"Same Learning Curves (60% & 70%)",'FontWeight','bold')
-xlabel(tle,"Time (s)", 'FontWeight','bold')
+% title(tle,"Same Learning Curves (70% & 70%)",'FontWeight','bold')
+xlabel(tle,"Time (m)", 'FontWeight','bold')
 
-% plot 1
 nexttile
 sub_minfo = minfo(string(minfo.player)=="player1"&string(minfo.item)=="finish1",:);
 specialt1 = sub_minfo.time_stamp;
@@ -121,7 +120,7 @@ sub_minfo = minfo(string(minfo.player)=="player2"&string(minfo.item)=="finish2",
 specialt3 = sub_minfo.time_stamp;
 specialt_idx3 = find_specialt_idx(specialt3,t2);
 
-plot(t1,cps_craft(:,1,2),'LineWidth',1.5,'Color','red')
+plot(t1,cps_craft(:,1,2),'--','LineWidth',1.5,'Color','red')
 hold on
 plot(t2,cps_aseembly(:,1,2),'LineWidth',1.5,'Color','blue')
 scatter(t2(specialt_idx1),cps_aseembly(specialt_idx1,1,2),30,'filled', ...
@@ -154,7 +153,7 @@ sub_minfo = minfo(string(minfo.player)=="player3"&string(minfo.item)=="finish3",
 specialt3 = sub_minfo.time_stamp;
 specialt_idx3 = find_specialt_idx(specialt3,t2);
 
-plot(t1,cps_craft(:,2,2),'LineWidth',1.5,'Color','red')
+plot(t1,cps_craft(:,2,2),'--','LineWidth',1.5,'Color','red')
 hold on
 plot(t2,cps_aseembly(:,2,2),'LineWidth',1.5,'Color','blue')
 scatter(t2(specialt_idx1),cps_aseembly(specialt_idx1,2,2),30,'filled', ...
@@ -185,7 +184,7 @@ sub_minfo = minfo(string(minfo.player)=="player4"&string(minfo.item)=="finish4",
 specialt3 = sub_minfo.time_stamp;
 specialt_idx3 = find_specialt_idx(specialt3,t2);
 
-plot(t1,cps_craft(:,3,2),'LineWidth',1.5,'Color','red')
+plot(t1,cps_craft(:,3,2),'--','LineWidth',1.5,'Color','red')
 hold on
 plot(t2,cps_aseembly(:,3,2),'LineWidth',1.5,'Color','blue')
 scatter(t2(specialt_idx1),cps_aseembly(specialt_idx1,3,2),30,'filled', ...
@@ -220,7 +219,7 @@ sub_minfo = minfo(string(minfo.player)=="player3"&string(minfo.item)=="finish3",
 specialt4 = sub_minfo.time_stamp;
 specialt_idx4 = find_specialt_idx(specialt4,t2);
 
-plot(t1,cps_craft(:,4,2),'LineWidth',1.5,'Color','red')
+plot(t1,cps_craft(:,4,2),'--','LineWidth',1.5,'Color','red')
 hold on
 plot(t2,cps_aseembly(:,4,2),'LineWidth',1.5,'Color','blue')
 scatter(t2(specialt_idx1),cps_aseembly(specialt_idx1,4,2),30,'filled', ...
@@ -257,7 +256,7 @@ sub_minfo = minfo(string(minfo.player)=="player4"&string(minfo.item)=="finish4",
 specialt4 = sub_minfo.time_stamp;
 specialt_idx4 = find_specialt_idx(specialt4,t2);
 
-plot(t1,cps_craft(:,5,2),'LineWidth',1.5,'Color','red')
+plot(t1,cps_craft(:,5,2),'--','LineWidth',1.5,'Color','red')
 hold on
 plot(t2,cps_aseembly(:,5,2),'LineWidth',1.5,'Color','blue')
 scatter(t2(specialt_idx1),cps_aseembly(specialt_idx1,5,2),30,'filled', ...
@@ -294,7 +293,7 @@ sub_minfo = minfo(string(minfo.player)=="player4"&string(minfo.item)=="finish4",
 specialt4 = sub_minfo.time_stamp;
 specialt_idx4 = find_specialt_idx(specialt4,t2);
 
-plot(t1,cps_craft(:,6,2),'LineWidth',1.5,'Color','red')
+plot(t1,cps_craft(:,6,2),'--','LineWidth',1.5,'Color','red')
 hold on
 plot(t2,cps_aseembly(:,6,2),'LineWidth',1.5,'Color','blue')
 scatter(t2(specialt_idx1),cps_aseembly(specialt_idx1,6,2),30,'filled', ...
